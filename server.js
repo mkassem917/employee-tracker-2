@@ -5,7 +5,7 @@ const inquirer = require('inquirer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-console.log(process.env.DB_PASSWORD);
+//console.log(process.env.DB_PASSWORD);
 
 const connection = mysql.createConnection({
     host: 'localhost',
