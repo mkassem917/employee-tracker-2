@@ -4,22 +4,23 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 //console.log(process.env.DB_PASSWORD);
 
 const connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
+    user: 'root',
     password: process.env.DB_PASSWORD,
     database: 'employee_db',
 });
 
 connection.connect((err) => {
     if (err) throw err;
-    runSearch();
+    start();
 });
 
-const runSearch = () => {
+const start = () => {
     inquirer
         .prompt({
             name: 'action',
@@ -72,4 +73,54 @@ const runSearch = () => {
             }
 
         });
+};
+
+// Question to add a department
+const departmentAdd = () => {
+    inquirer
+        .prompt({
+            name: 'department',
+            type: 'input',
+            message: 'What is the department you would like to add?',
+        })
+        .then((answer) => {
+            console.log(`You added department "${answer.department}`);
+            let query = 'INSERT INTO department (name) VALUES  ( ? )';
+            connection.query(query, answer.department, (err, res) => {
+                if (err) throw err;
+
+                start();
+            });
+        })
+
+};
+// Question to a role
+const roleAdd = () => {
+    inquirer
+        .prompt({
+            name: 'title',
+            type: 'input',
+            message: 'What employee role would like to add?',
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'What would be the salary of the new employee role?',
+        },
+        {
+            name: 'department_id',
+            type: 'list',
+            message: 'What would be the salary of the new employee role?',
+            choices: ['IT', 'Sales', 'Marketing', 'R & D'],
+        })
+        .then((answer) => {
+            console.log(`You added the role of a "${answer.title}"`);
+            //let query = 'INSERT INTO role SET ? (title: , salary, department_id)';
+            connection.query('INSERT INTO role SET ?' [${answer.title}, ${answer.salary}, ${answer.department_id}], (err, res) => {
+                if (err) throw err;
+
+                start();
+            });
+        })
+
 };
