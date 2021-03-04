@@ -2,6 +2,8 @@
 const express = require('express');
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const conTable = require('console.table');
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -67,6 +69,10 @@ const start = () => {
                     departmentSearch();
                     break;
 
+                case 'Exit':
+                        connection.end();
+                        break;
+
                 default:
                     console.log(`Invalid action: ${answer.action}`);
                     break;
@@ -97,30 +103,96 @@ const departmentAdd = () => {
 // Question to a role
 const roleAdd = () => {
     inquirer
-        .prompt({
-            name: 'title',
+        .prompt([
+         {
+            name: 'newtitle',
             type: 'input',
             message: 'What employee role would like to add?',
         },
         {
-            name: 'salary',
+            name: 'newsalary',
             type: 'input',
             message: 'What would be the salary of the new employee role?',
         },
         {
-            name: 'department_id',
+            name: 'newdepartment_id',
             type: 'list',
             message: 'What would be the salary of the new employee role?',
             choices: ['IT', 'Sales', 'Marketing', 'R & D'],
-        })
+        }
+    ])
         .then((answer) => {
-            console.log(`You added the role of a "${answer.title}"`);
-            //let query = 'INSERT INTO role SET ? (title: , salary, department_id)';
-            connection.query('INSERT INTO role SET ?' [${answer.title}, ${answer.salary}, ${answer.department_id}], (err, res) => {
+            console.log(`You added the role of a "${answer.newtitle}"`);
+            console.log(answer);
+            connection.query = ('INSERT INTO role SET ?',
+            {
+                title: answer.newtitle,
+                salary: answer.newsalary,
+                department_id: answer.newdepartment_id,
+            },
+            //connection.query(query, {answer.newtitle, answer.newsalary, answer.newdepartment_id}, 
+            (err, res) => {
                 if (err) throw err;
-
+            })
+                console.table(answer);
                 start();
             });
-        })
+            
+        };
 
-};
+
+        // Question to add an employee
+const employeeAdd = () => {
+    inquirer
+        .prompt([
+        {
+            name: 'firstname',
+            type: 'input',
+            message: 'What is the employees first name?',
+        },
+        {
+            name: 'lastname',
+            type: 'input',
+            message: 'What is the employees last name?',
+        },
+        {
+            name: 'roleId',
+            type: 'input',
+            message: 'What is the employee role ID?',
+        },
+        {
+            name: 'managerId',
+            type: 'input',
+            message: 'What is the manager ID?',
+        }
+        ])
+            .then((answer) => {
+            console.log(`You added a new employee named "${answer.firstname}"`);
+            console.log(answer);
+            connection.query = ('INSERT INTO employee SET ?',
+            {
+                firstname: answer.firstname,
+                lastname: answer.lastname,
+                roleId: answer.roleId,
+                managerId: answer.managerId
+            },
+            
+            (err, res) => {
+                if (err) throw err;
+            })
+                console.table(answer);
+                start();
+            });
+            
+        };
+    
+        const roleSearch = () => {
+            const query = ('SELECT * FROM role');  
+            connection.query(query, (err, answer) => {
+                if (err) throw err;
+                //console.log(answer);
+                console.table(answer);
+            });
+            
+                start();
+        }
